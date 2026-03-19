@@ -35,7 +35,7 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-} //TODO: Do exactly as the instructor does in the last video with the type converters
+}
 
 @Composable
 fun NotesApp(noteViewModel: NoteViewModel = viewModel()) {
