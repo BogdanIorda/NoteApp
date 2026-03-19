@@ -1,5 +1,6 @@
 package com.example.noteapp.screen
 
+import android.R.attr.onClick
 import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -16,12 +17,15 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Notifications
+import androidx.compose.material.icons.rounded.RestoreFromTrash
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -54,7 +58,8 @@ import com.example.noteapp.util.formatDate
 fun NoteScreen(
     notes: List<Note>,
     onAddNote: (Note) -> Unit,
-    onRemoveNote: (Note) -> Unit
+    onRemoveNote: (Note) -> Unit,
+    onDeleteAllNotes: () -> Unit
 ) {
 // rememberSaveable instead of remember so the state will not change back to default when the screen rotates
     var title by rememberSaveable { mutableStateOf("") }
@@ -71,10 +76,21 @@ fun NoteScreen(
                 Text(text = stringResource(id = R.string.app_name))
             },
             actions = {
-                Icon(
-                    imageVector = Icons.Rounded.Notifications,
-                    contentDescription = "Bell Icon"
-                )
+                IconButton(
+                    onClick = {
+                        onDeleteAllNotes()
+                        Toast.makeText(
+                            context,
+                            "All Notes Deleted",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.Delete,
+                        contentDescription = "Trash Can Icon",
+                    )
+                }
             },
             colors =
                 TopAppBarDefaults.topAppBarColors(MaterialTheme.colorScheme.onPrimary)
