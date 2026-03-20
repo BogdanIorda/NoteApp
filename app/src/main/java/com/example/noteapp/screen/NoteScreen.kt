@@ -76,6 +76,7 @@ fun NoteScreen(
     val context = LocalContext.current
     val keyboardController = LocalSoftwareKeyboardController.current
     var popupShowing by rememberSaveable { mutableStateOf(false) }
+    var searchQuery by rememberSaveable { mutableStateOf("") }
 
     Column(
         modifier = Modifier
@@ -106,6 +107,17 @@ fun NoteScreen(
                 .fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            if (notes.isNotEmpty()) {
+                NoteInputText(
+                    modifier = Modifier
+                        .padding(top = 10.dp, bottom = 10.dp),
+                    text = searchQuery,
+                    label = "Search Title",
+                    onTextChange = {
+                        searchQuery = it
+                    }
+                )
+            }
             NoteInputText(
                 modifier = Modifier
                     .padding(
@@ -186,8 +198,11 @@ fun NoteScreen(
                 }
             )
         }
+
+        val searchList = notes.filter { it.title.startsWith(searchQuery, ignoreCase = true) }
+
         LazyColumn {
-            items(notes) { note ->
+            items(searchList) { note ->
                 NoteRow(
                     note = note,
                     onDeleteClicked = {
@@ -196,7 +211,6 @@ fun NoteScreen(
                 )
             }
         }
-
     }
 }
 
