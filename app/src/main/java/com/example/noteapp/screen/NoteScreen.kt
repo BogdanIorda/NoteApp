@@ -1,8 +1,12 @@
 package com.example.noteapp.screen
 
 import android.R.attr.onClick
+import android.widget.Button
 import android.widget.Toast
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.hoverable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -20,6 +24,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Notifications
 import androidx.compose.material.icons.rounded.RestoreFromTrash
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -34,6 +40,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -43,9 +50,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.DialogProperties
 import com.example.noteapp.R
 import com.example.noteapp.components.NoteButton
 import com.example.noteapp.components.NoteInputText
@@ -66,6 +75,7 @@ fun NoteScreen(
     var description by rememberSaveable { mutableStateOf("") }
     val context = LocalContext.current
     val keyboardController = LocalSoftwareKeyboardController.current
+    var popupShowing by rememberSaveable { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -78,12 +88,7 @@ fun NoteScreen(
             actions = {
                 IconButton(
                     onClick = {
-                        onDeleteAllNotes()
-                        Toast.makeText(
-                            context,
-                            "All Notes Deleted",
-                            Toast.LENGTH_LONG
-                        ).show()
+                        popupShowing = true
                     }
                 ) {
                     Icon(
@@ -160,6 +165,58 @@ fun NoteScreen(
             modifier = Modifier
                 .padding(10.dp)
         )
+        if (popupShowing) {
+            BasicAlertDialog(
+                onDismissRequest = { popupShowing = false },
+                Modifier,
+                DialogProperties(),
+                content = {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "All of your notes will be deleted!\nAre you sure?",
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 20.sp
+                        )
+
+                        Row(
+                            modifier = Modifier
+                                .padding(top = 10.dp),
+                            horizontalArrangement = Arrangement.spacedBy(10.dp)
+                        ) {
+                            Button(
+                                modifier = Modifier
+                                    .padding(4.dp),
+                                onClick = {
+                                    onDeleteAllNotes()
+                                    Toast.makeText(
+                                        context,
+                                        "All Notes Deleted",
+                                        Toast.LENGTH_LONG
+                                    ).show()
+                                    popupShowing = false
+                                }
+                            ) {
+                                Text(text = "Yes")
+                            }
+                            Button(
+                                modifier = Modifier
+                                    .padding(4.dp),
+                                onClick = {
+                                    popupShowing = false
+                                }
+                            ) {
+                                Text(text = "No")
+                            }
+
+                        }
+                    }
+                })
+        }
         LazyColumn {
             items(notes) { note ->
                 NoteRow(
