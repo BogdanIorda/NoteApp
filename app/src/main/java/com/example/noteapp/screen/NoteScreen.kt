@@ -166,56 +166,25 @@ fun NoteScreen(
                 .padding(10.dp)
         )
         if (popupShowing) {
-            BasicAlertDialog(
+            AlertDialog(
                 onDismissRequest = { popupShowing = false },
-                Modifier,
-                DialogProperties(),
-                content = {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(
-                            text = "All of your notes will be deleted!\nAre you sure?",
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier
-                                .fillMaxWidth(),
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 20.sp
-                        )
-
-                        Row(
-                            modifier = Modifier
-                                .padding(top = 10.dp),
-                            horizontalArrangement = Arrangement.spacedBy(10.dp)
-                        ) {
-                            Button(
-                                modifier = Modifier
-                                    .padding(4.dp),
-                                onClick = {
-                                    onDeleteAllNotes()
-                                    Toast.makeText(
-                                        context,
-                                        "All Notes Deleted",
-                                        Toast.LENGTH_LONG
-                                    ).show()
-                                    popupShowing = false
-                                }
-                            ) {
-                                Text(text = "Yes")
-                            }
-                            Button(
-                                modifier = Modifier
-                                    .padding(4.dp),
-                                onClick = {
-                                    popupShowing = false
-                                }
-                            ) {
-                                Text(text = "No")
-                            }
-
-                        }
-                    }
-                })
+                title = { Text(text = "Are you sure?") },
+                text = { Text(text = "All of your notes will be deleted!") },
+                confirmButton = {
+                    Button(onClick = {
+                        onDeleteAllNotes()
+                        Toast.makeText(
+                            context,
+                            "All Notes Deleted",
+                            Toast.LENGTH_LONG
+                        ).show()
+                        popupShowing = false
+                    }) { Text("Yes") }
+                },
+                dismissButton = {
+                    Button(onClick = { popupShowing = false }) { Text("No") }
+                }
+            )
         }
         LazyColumn {
             items(notes) { note ->
