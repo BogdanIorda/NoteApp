@@ -19,16 +19,11 @@ class NoteViewModel @Inject constructor(private val repository: NoteRepository) 
     val noteList = _noteList.asStateFlow()
 
     init {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.IO) {//redundant usage of Dispatcher and conflate. Just for learning purposes
             repository.getAllNotes().distinctUntilChanged().collect { listOfNotes ->
-                if (listOfNotes.isEmpty()) {
-                    _noteList.value = emptyList()
-                } else {
-                    _noteList.value = listOfNotes
-                }
+                _noteList.value = listOfNotes
             }
         }
-
     }
 
     fun addNote(note: Note) = viewModelScope.launch { repository.addNote(note) }

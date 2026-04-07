@@ -17,14 +17,22 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideNotesDao(noteDatabase: NoteDatabase): NoteDatabaseDao = noteDatabase.noteDao()
-
-    @Singleton
-    @Provides
+    // !! (at Compile Time) !!
     fun provideAppDatabase(@ApplicationContext context: Context): NoteDatabase =
         Room.databaseBuilder(
             context, NoteDatabase::class.java, "notes_db"
         ).fallbackToDestructiveMigration(false).build()
+    // It is running the fully functioning NoteDatabaseDao_Impl, but it's not awake
+    // This builds the entire Database connection (the House). Inside that house,
+    // the NoteDatabaseDao_Impl robot is sitting on the couch, waiting.
+
+    @Singleton
+    @Provides
+    // !! (at Run Time) !!
+    fun provideNotesDao(noteDatabase: NoteDatabase): NoteDatabaseDao = noteDatabase.noteDao()
+    // It is returning the fully functioning NoteDatabaseDao_Impl (it is awake now, it's running)
+    // This doesn't "run" the robot's commands (like insert or delete). Instead,
+    // it simply fetches the robot off the couch and hands it to Hilt.
 
 
 }
